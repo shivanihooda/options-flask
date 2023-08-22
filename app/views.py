@@ -43,7 +43,7 @@ class GetStrategyDetails(MethodView):
                 return calculate_short_put_profit_and_loss(start_date, short_put)
             elif strategy == StrategyTypes.LongStraddle:
                 long_call = str(request.args.get("long_call"))
-                long_put = str(request.args.get("short_call"))
+                long_put = str(request.args.get("long_put"))
                 return calculate_long_straddle_profit_and_loss(start_date, long_put, long_call)
             elif strategy == StrategyTypes.ShortStraddle:
                 short_call = str(request.args.get("short_call"))

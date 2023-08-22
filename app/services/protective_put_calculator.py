@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 import yahoo_fin.stock_info as stock_info
 from google.cloud import bigquery
 
@@ -14,11 +15,11 @@ def calculate_protective_put_profit_and_loss(start_date, short_put_contract):
     protective_put = get_value_from_big_query(client, short_put_contract, start_date)
 
     stock_data = stock_info.get_live_price(protective_put["ticker_symbol"])
-
-    stock_value = stock_info.get_data(protective_put["ticker_symbol"],
-                                      start_date=f'{start_date[6:8]}/{start_date[4:6]}/{start_date[0:4]}',
-                                      end_date=protective_put["expiration_date"].strftime("%d/%m/%Y"))
-
+    formatted_start_date = str(f'{start_date[4:6]}/{start_date[6:8]}/{start_date[0:4]}')
+    stock_value_data = stock_info.get_data(protective_put["ticker_symbol"],
+                                           start_date=formatted_start_date,
+                                           end_date=protective_put["expiration_date"].strftime("%m/%d/%Y"))
+    stock_value = stock_value_data.to_dict(orient='records')[0]
     premium_received = calculate_premium_received(protective_put["per_value_share"])
 
     maximum_loss = protective_put["strike"] - stock_value["close"] - premium_received
